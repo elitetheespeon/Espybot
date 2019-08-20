@@ -1,0 +1,4 @@
+Still a work in progress.
+
+To install all dependencies, run ./composer.phar install
+You will need the PDO module enabled in PHP as well as mysqlnd.

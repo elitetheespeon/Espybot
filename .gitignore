@@ -1,0 +1,8 @@
+.notes
+config/config.ini
+plugins-notused/
+vendor/
+tmp/
+logs/
+.idea/
+.c9/

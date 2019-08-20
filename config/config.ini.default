@@ -1,0 +1,121 @@
+[globals]
+;Instance ID (must be unique per bot)
+instance = 42
+
+;Enable game integration
+game_integration_enable = false
+
+;Check for new invites
+update_invites = true
+
+;Interval to check for new invites (seconds)
+update_invites_interval = 30
+
+;Send notifications when user joins
+notify_user_join = true
+
+;Send notifications when user leaves
+notify_user_leave = true
+
+;Send notifications when a user is banned
+notify_ban = true
+
+;Send notifications when a user is unbanned
+notify_ban_removed = true
+
+;Track and store when user state changes (used for last logged in)
+notify_user_presence = true
+
+;Send notifications when a new channel is added
+notify_channel_add = true
+
+;Send notifications when a channel is deleted
+notify_channel_delete = true
+
+;Character to use that indicates a command
+trigger = &
+
+;If in debug mode, only info log lines and above are shown
+debug = true
+
+;If webserver is enabled, access to internal APIs can be made
+webserver = false
+webserver_port = 8070
+
+;The bot/user token to login with
+token = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+;List of Super Admins (will bypass all command checks)
+;You
+bot_owners.1 = 00000000000000000
+;A friend
+;bot_owners.2 = 11111111111111111
+
+;CleverIO API user, key, and nickname
+;cleverio_user = zzzzzzzzzzzzzzzzz
+;cleverio_key = yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+;cleverio_nick = MyBot
+
+;CleverBot API key
+;cleverbot_key = xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+;Open Weather Map API key
+;weather_api_key = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+;Database information for storing logs, bot configs etc.
+db_host = 127.0.0.1
+db_name = espybot
+db_user = espybot
+db_pass = "mycoolpassword"
+
+;Ignore chat logging from users
+;ignore_chat_log.1 = 3333333333333333333
+
+;NSFW designated channels
+;nsfw-car-porn
+;nsfw_channels.1 = 666666666666666666
+;nsfw-things
+;nsfw_channels.2 = 777777777777777777
+
+;Gameserver integration RCON channels [only accept rcon commands from here]
+;gameserver_rcon_chan.1 = 2222222222222222222
+
+;Automatically set a role to a new member
+;[set_role_new_members]
+
+;Testing set to Console Peasents
+;[set_role_new_members.1]
+;guild = 88888888888888888
+;role = 9999999999999999999
+
+;csgo-surf
+;[gameserver_ips.1]
+;ip = 4.2.2.1
+;port = 27015
+;password = "mycoolrconpassword"
+;name = CS:GO Surf
+
+;csgo-surf-dm
+;[gameserver_ips.2]
+;ip = 4.2.2.1
+;port = 27016
+;password = "mycoolrconpassword"
+;name = CS:GO Surf DM
+
+;Enabled plugins
+[plugins]
+about = true
+admin = true
+channel_topics = true
+chatlog = true
+chatlog_notify = true
+eval_test = true
+help = true
+;pokedex = true
+reply = true
+restart = true
+urban = true
+weatherapi = true
+;gameintegration = true
+;rcon = true
+;roleclaim = true
