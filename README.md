@@ -2,10 +2,10 @@
 Espybot is a Discord bot written in PHP, using MySQL for chat logs and configuration storage.
 
 ## Requirements
-OS: Linux 64-bit (Windows is difficult to set up this bot on and voice support does not work.)
-PHP: Version 5.6 64-bit (32bit does not work due to IDs being 64bit integers.)
-PHP Modules: mysqlnd, PDO, pdo_mysql
-MySQL: MySQL 5.6+ (Tested with MariaDB 10)
+- OS: Linux 64-bit (Windows is difficult to set up this bot on and voice support does not work.)
+- PHP: Version 5.6 64-bit (32bit does not work due to IDs being 64bit integers.)
+- PHP Modules: mysqlnd, PDO, pdo_mysql
+- MySQL: MySQL 5.6+ (Tested with MariaDB 10)
 
 ## Installing
 To install all dependencies, run the following commands:
