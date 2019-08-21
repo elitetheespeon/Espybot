@@ -1,12 +1,33 @@
-Still a work in progress.
+## About
+Espybot is a Discord bot written in PHP, using MySQL for chat logs and configuration storage.
 
-To install all dependencies, run ./composer.phar install
-You will need the PDO module enabled in PHP as well as mysqlnd. Tested with PHP version 5.6
-Copy the included config `config/config.ini.default` as `config/config.ini` and edit with your desired options.
+## Requirements
+OS: Linux 64-bit (Windows is difficult to set up this bot on and voice support does not work.)
+PHP: Version 5.6 64-bit (32bit does not work due to IDs being 64bit integers.)
+PHP Modules: mysqlnd, PDO, pdo_mysql
+MySQL: MySQL 5.6+ (Tested with MariaDB 10)
 
-Run the bot like so:
+## Installing
+To install all dependencies, run the following commands:
 ```
+cd /path/to/project/
+./composer.phar install
+```
+
+To setup the database, run the following commands:
+```
+cd /path/to/project/
+echo "create database espybot" | mysql -u root -p
+mysql -u root -p espybot < espybot.sql
+```
+
+Copy the included config `config/config.ini.default` as `config/config.ini` and edit with your desired options. This assumes you have registered a BOT account with Discord and have the token already.
+
+Now to start the bot:
+```
+cd /path/to/project/
 php espybot.php
 ```
 
-If in debug mode, all websocket connection messages are shown as well as chat and what the bot is doing.
+## Troubleshooting
+If debug mode is enabled in `config.ini`, all websocket connection messages are shown as well as chat and what the bot is doing. This can be used to help diagnose why the bot isn't responding or not connecting.
