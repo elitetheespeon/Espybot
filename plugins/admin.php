@@ -133,7 +133,7 @@ class admin{
         $guilds = $this->discord->guilds;
         
         //Make sure we have at least one guild
-        if (count($guilds) !== 0){
+        if (is_countable($guilds) && count($guilds) !== 0){
             //Loop through guilds
             foreach ($guilds as $guild){
                 //Build fields
@@ -194,7 +194,7 @@ class admin{
         $channels = $guild->channels;
         
         //Make sure we have at least one channel
-        if(count($channels) !== 0){
+        if(is_countable($channels) && count($channels) !== 0){
             //Loop through channels
             foreach ($channels as $channel){
                 //Get channel type
@@ -261,7 +261,7 @@ class admin{
         $fields = array();
         
         //Check if user list contains more than 25 users
-        if(count($members) > 25){
+        if(is_countable($members) && count($members) > 25){
             //More than 25 users, loop through 25 at a time
             foreach($members as $user){
                 //Check if 25 users have been added
@@ -289,7 +289,7 @@ class admin{
                 $user_count++;
 
                 //Check for end of list
-                if($user_count == count($members)){
+                if(is_countable($members) && $user_count == count($members)){
                     //Reached end of list, build embed for remainder
                     $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
                         'title' => ':wrench: List Users',
@@ -323,7 +323,7 @@ class admin{
     //Ban user
     private function admin_ban($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check amount of arguments
-        if(count($arguments) == 2){
+        if(is_countable($arguments) && count($arguments) == 2){
             //2 args, check if first is guild name or id
             if(is_numeric($arguments[0])){
                 //Guild id passed
@@ -337,7 +337,7 @@ class admin{
             
             //Set id to ban
             $ban_id = $arguments[1];
-        }elseif(count($arguments) == 1){
+        }elseif(is_countable($arguments) && count($arguments) == 1){
             //1 arg, set vars
             $guild_id = $guildID;
             $guild_name = null;
@@ -411,7 +411,7 @@ class admin{
     //Ban list of users
     private function admin_multiban($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check amount of arguments
-        if(count($arguments) >= 2){
+        if(is_countable($arguments) && count($arguments) >= 2){
             //2 or more args, set vars
             $guild_id = $guildID;
             $guild_name = $guildName;
@@ -447,7 +447,7 @@ class admin{
         }
         
         //Check if list is valid
-        if(count($ban_ids) !== 0){
+        if(is_countable($ban_ids) && count($ban_ids) !== 0){
             //Run multiban
             multiban($ban_ids, $channelID, $fromID, $guild);
 
@@ -464,11 +464,11 @@ class admin{
     //Kick user
     private function admin_kick($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check amount of arguments
-        if(count($arguments) == 2){
+        if(is_countable($arguments) && count($arguments) == 2){
             //2 args found, guild passed
             $guild_id = $arguments[0];
             $kick_id = $arguments[1];
-        }elseif(count($arguments) == 1){
+        }elseif(is_countable($arguments) && count($arguments) == 1){
             //1 arg passed, only user id passed
             $guild_id = $guildID;
             $kick_id = $msgarg;
@@ -519,7 +519,7 @@ class admin{
     //Send message as bot
     private function admin_sendas($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check amount of arguments
-        if(count($arguments) >= 2){
+        if(is_countable($arguments) && count($arguments) >= 2){
             //2 args found, set vars
             $channel_id = $arguments[0];
             unset($arguments[0]);
@@ -558,11 +558,11 @@ class admin{
     //Clear messages
     private function admin_clear($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check amount of arguments
-        if(count($arguments) == 2){
+        if(is_countable($arguments) && count($arguments) == 2){
             //2 args found, set channel id and number
             $channel_id = $arguments[0];
             $message_num = $arguments[1];
-        }elseif(count($arguments) == 1){
+        }elseif(is_countable($arguments) && count($arguments) == 1){
             //1 arg found, set number
             $channel_id = $channelID;
             $message_num = $arguments[0];
@@ -613,7 +613,7 @@ class admin{
         $users = $this->discord->users;
         
         //Check if users exist
-        if (count($users) !== 0){
+        if (is_countable($users) && count($users) !== 0){
             //Loop through users
             foreach ($users as $userinfo){
                 //Check for part of username
@@ -629,7 +629,7 @@ class admin{
         }
         
         //Check if users were returned
-        if (count($userdata) == 0){
+        if (is_countable($userdata) && count($userdata) == 0){
             //No users returned
             $this->command_response('warning', 'Find User', "No users found matching your search.", $reply_to);
             return false;
@@ -769,7 +769,7 @@ class admin{
     //Add admin
     private function admin_addadmin($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check if passed both user id and admin alias name
-        if(count($arguments) == 2){
+        if(is_countable($arguments) && count($arguments) == 2){
             //Passed user id and name, check if user id is valid
             $admin_id = $this->discord->users->get('id', $arguments[0]);
             
@@ -800,7 +800,7 @@ class admin{
         }
         
         //Check if passed only user name
-        if(count($arguments) == 1){
+        if(is_countable($arguments) && count($arguments) == 1){
             //Only passed user id, check if user id is valid
             $admin_id = $this->discord->users->get('id', $arguments[0]);
             
@@ -969,7 +969,7 @@ class admin{
     //Set admin channel
     private function admin_addadminchan($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check if passed guild id and channel id
-        if(count($arguments) == 2){
+        if(is_countable($arguments) && count($arguments) == 2){
             //Check if guild id is valid
             $admin_guild = $this->discord->guilds->get('id', $arguments[0]);
             
@@ -1013,7 +1013,7 @@ class admin{
         }
         
         //Check if only passed channel id
-        if(count($arguments) == 1){
+        if(is_countable($arguments) && count($arguments) == 1){
             //Check if channel id is valid
             $admin_chan = find_channel($arguments[0]);
             $admin_guild = $this->discord->guilds->get('id', $guildID);
@@ -1051,7 +1051,7 @@ class admin{
     //Remove admin channel
     private function admin_removeadminchan($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check if passed guild id and channel id
-        if(count($arguments) == 2){
+        if(is_countable($arguments) && count($arguments) == 2){
             //Check if guild id is valid
             $admin_guild = $this->discord->guilds->get('id', $arguments[0]);
             
@@ -1095,7 +1095,7 @@ class admin{
         }
         
         //Check if only passed channel id
-        if(count($arguments) == 1){
+        if(is_countable($arguments) && count($arguments) == 1){
             //Check if channel id is valid
             $admin_chan = find_channel($arguments[0]);
             $admin_guild = $this->discord->guilds->get('id', $guildID);
@@ -1258,7 +1258,7 @@ class admin{
     //Set a role (or role group) on a user
     private function admin_setrole($guildName, $channelID, $fromID, $command, $arguments, $msgarg, $guildID, $reply_to){
         //Check if guild id is set
-        if(count($arguments) > 1){
+        if(is_countable($arguments) && count($arguments) > 1){
             //Attempt to get user
             $guild = $this->discord->guilds->get('id', $guildID);
             $member = $guild->members->get('id', $arguments[0]);
@@ -1332,7 +1332,7 @@ class admin{
             return false;
         }else{
             //Role group, check if any roles should be added
-            if(count($rolegroup['add']) > 0){
+            if(is_countable($rolegroup['add']) && count($rolegroup['add']) > 0){
                 //Loop through roles to be added
                 foreach($rolegroup['add'] as $role_add){
                     //Get role from ID
@@ -1353,7 +1353,7 @@ class admin{
             }
 
             //Role group, check if any roles should be removed
-            if(count($rolegroup['remove']) > 0){
+            if(is_countable($rolegroup['remove']) && count($rolegroup['remove']) > 0){
                 //Loop through roles to be added
                 foreach($rolegroup['remove'] as $role_remove){
                     //Get role from ID

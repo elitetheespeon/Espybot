@@ -260,7 +260,7 @@ class pokedex{
             //Check if winners exist
             if(!empty($winners)){
                 //Check if there is more than 1 winner
-                if(count($winners) == 1){
+                if(is_countable($winners) && count($winners) == 1){
                     //Start winner message
                     $message = "The winner is:";
                     

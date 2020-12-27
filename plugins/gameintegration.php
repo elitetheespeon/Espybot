@@ -53,7 +53,7 @@ class gameintegration{
                     $msgcontent = "Server List: \r\n-------------------------\r\n";
                     
                     //Check there are servers
-                    if(count($this->f3->get('gameserver_ips')) !== 0){
+                    if(is_countable($this->f3->get('gameserver_ips')) && count($this->f3->get('gameserver_ips')) !== 0){
                         //Loop through servers
                         foreach($this->f3->get('gameserver_ips') as $server){
                             $msgcontent .= $server['name']."\r\n";

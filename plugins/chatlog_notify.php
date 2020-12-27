@@ -44,7 +44,7 @@ class chatlog_notify{
         $attachments = $msgData["message"]["attachments"];
         
         //Check if empty message or attachement
-        if(count($attachments) > 0  && $message == ""){
+        if(is_countable($attachments) && count($attachments) > 0  && $message == ""){
             //Ignore message as there is no text
             return;
         }else{

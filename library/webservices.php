@@ -63,7 +63,7 @@ if($f3->get('webserver')){
                 $commits = $eventdata->commits;
     
                 //Check if commit data is valid
-                if(count($commits) !== 0){
+                if(is_countable($commits) && count($commits) !== 0){
                     //Loop through each commit
                     foreach($commits as $commit){
                         //Send commit info to channel
@@ -263,7 +263,7 @@ if($f3->get('webserver')){
             $guilds = $discord->guilds;
             $userdata = array();
             //Check if guilds exist
-            if (count($guilds) !== 0){
+            if (is_countable($guilds) && count($guilds) !== 0){
                 //Get guild info
                 $guildinfo = get_all_member_guilds($args['id']);
                 foreach($guildinfo as $guild){
@@ -278,7 +278,7 @@ if($f3->get('webserver')){
                 $user_key = key($userdata[$args['id']]);
                 $user_id = $args['id'];
                 //Check how many guilds user is in
-                if (count($userdata[$args['id']]) > 0){
+                if (is_countable($userdata[$args['id']]) && count($userdata[$args['id']]) > 0){
                     //User found in at least one guild
                     $member_guilds = array();
                     $i = 0;
@@ -308,7 +308,7 @@ if($f3->get('webserver')){
                     if(!empty($member_guilds)){
                         foreach($member_guilds as $guild){
                             $i++;
-                            if($i == count($member_guilds)){
+                            if(is_countable($member_guilds) && $i == count($member_guilds)){
                                 $servers .= $guild['guild_name'];
                             }else{
                                 $servers .= $guild['guild_name'].", ";

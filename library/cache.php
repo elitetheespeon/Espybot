@@ -16,10 +16,10 @@ class prefcache{
             if(!empty($f3->get($key))){
                 foreach ($f3->get($key) as $value){
                     //Check for matches
-                    if(count($search) == 2 && $search[0] == $value["value1"] && $search[1] == $value["value2"]){
+                    if(is_countable($search) && count($search) == 2 && $search[0] == $value["value1"] && $search[1] == $value["value2"]){
                         //Search found in list
                         return true;
-                    }elseif(count($search) == 3 && $search[0] == $value["value1"] && $search[1] == $value["value2"] && $search[2] == $value["value3"]){
+                    }elseif(is_countable($search) && count($search) == 3 && $search[0] == $value["value1"] && $search[1] == $value["value2"] && $search[2] == $value["value3"]){
                         //Search found in list
                         return true;                        
                     }
@@ -30,16 +30,16 @@ class prefcache{
                 $logger->info($key." cache empty, populating from DB.");
                 $db_pull = $db->exec("SELECT `key`, `value1`, `value2`, `value3` FROM config WHERE `key` = ? AND bot_id = ?",array(1=>$key,2=>$f3->get('instance')));
                 //Check if data was returned for database key
-                if (count($db_pull) !== 0){
+                if (is_countable($db_pull) && count($db_pull) !== 0){
                     //Set key in cache
                     $f3->set($key,$db_pull);
                     //Start loop to check for search against list
                     foreach ($f3->get($key) as $value){
                         //Check for matches
-                        if(count($search) == 2 && $search[0] == $value["value1"] && $search[1] == $value["value2"]){
+                        if(is_countable($search) && count($search) == 2 && $search[0] == $value["value1"] && $search[1] == $value["value2"]){
                             //Search found in list
                             return true;
-                        }elseif(count($search) == 3 && $search[0] == $value["value1"] && $search[1] == $value["value2"] && $search[2] == $value["value3"]){
+                        }elseif(is_countable($search) && count($search) == 3 && $search[0] == $value["value1"] && $search[1] == $value["value2"] && $search[2] == $value["value3"]){
                             //Search found in list
                             return true;                        
                         }
@@ -65,7 +65,7 @@ class prefcache{
                 $logger->info($key." cache empty, populating from DB.");
                 $db_pull = $db->exec("SELECT `key`, `value1`, `value2`, `value3` FROM config WHERE `key` = ? AND bot_id = ?",array(1=>$key,2=>$f3->get('instance')));
                 //Check if data was returned for database key
-                if (count($db_pull) !== 0){
+                if (is_countable($db_pull) && count($db_pull) !== 0){
                     //Set key in cache
                     $f3->set($key,$db_pull);
                     //Start loop to check for search against list
@@ -254,7 +254,7 @@ class prefcache{
             return false;
         }
         //Check if data was returned for database key
-        if (count($db_pull) !== 0){
+        if (is_countable($db_pull) && count($db_pull) !== 0){
             //Clear cache
             $f3->set($key,null);
             //Re-populate cache

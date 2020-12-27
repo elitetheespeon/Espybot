@@ -162,7 +162,7 @@ class channel_topics{
                             $channel = $guild->channels->getAll('name', $results['c']);
                             
                             //Check if channel object was returned
-                            if(count($channel) > 0){
+                            if(is_countable($channel) && count($channel) > 0){
                                 //Object is valid, get channel object
                                 $channel_id = $channel->first();
                             }else{
@@ -266,7 +266,7 @@ class channel_topics{
                     }
 
                     //Check if there are any stored timers
-                    if(count($timers) > 0){
+                    if(is_countable($timers) && count($timers) > 0){
                         //We got back at least one timer, loop through
                         foreach($timers as $timer){
                             //Transform timer data as needed
@@ -330,7 +330,7 @@ class channel_topics{
                             $timers = false;
                         }
                         
-                        if(count($timers) > 0){
+                        if(is_countable($timers) && count($timers) > 0){
                             //Timer ID is valid, remove from database
                             try{
                                 $timer_remove = $db->exec('DELETE FROM timers WHERE id = ? AND bot_id = ?', array(1=>$timer_id,2=>$this->f3->get("instance")));
@@ -426,7 +426,7 @@ class channel_topics{
         }
         
         //Check if we got a timer back
-        if(count($channel_info) == 0){
+        if(is_countable($channel_info) && count($channel_info) == 0){
             //The timer ID passed was not valid, log and return false
             $this->logger->err("Expire Timer - Passed an invalid timer ID: {$timer_id}");
             return false;
@@ -515,7 +515,7 @@ class channel_topics{
         }
         
         //Check if there are any stored timers
-        if(count($timers) > 0){
+        if(is_countable($timers) && count($timers) > 0){
             //There is at least one timer stored, loop through
             foreach($timers as $timer){
                 //Calculate time in seconds timer will run

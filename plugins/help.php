@@ -63,7 +63,7 @@ class help{
                 foreach ($plugins as $plugin) {
                     $infoarr = $plugin->information();
                     //Check if array is valid
-                    if(count($infoarr) !== 0){
+                    if(is_countable($infoarr) && count($infoarr) !== 0){
                         //Loop through commands
                         foreach($infoarr as $info){
                             //Check access level for command
@@ -98,7 +98,7 @@ class help{
                 foreach ($plugins as $plugin){
                     $info = $plugin->information();
                     //Check if array is valid
-                    if(count($info) !== 0){
+                    if(is_countable($info) && count($info) !== 0){
                         //Loop through commands
                         foreach($info as $cmd){
                             //Check for command

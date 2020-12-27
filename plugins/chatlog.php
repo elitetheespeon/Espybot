@@ -48,7 +48,7 @@ class chatlog{
         $format_time = date("m/d/y - h:i:s A",date("U",strtotime($timestamp)));
         
         //Check for ignored user ids
-        if(count($this->f3->get('ignore_chat_log')) > 0){
+        if(is_countable($this->f3->get('ignore_chat_log')) && count($this->f3->get('ignore_chat_log')) > 0){
             //Loop through user ignore list
             foreach($this->f3->get('ignore_chat_log') as $ignored_id){
                 //Don't log anything from ignored user id
@@ -60,7 +60,7 @@ class chatlog{
         }
         
         //Check message
-        if(count($attachments) > 0  && $message == ""){
+        if(is_countable($attachments) && count($attachments) > 0  && $message == ""){
             //Message with attachment
             $this->logger->info("Attachment(s) recieved - [{$guildName}] [#{$channelName}] {$fromName}");
         }elseif($message == ""){

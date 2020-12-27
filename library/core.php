@@ -81,7 +81,7 @@ function get_plugin_commands($plugin){
     $infoarr = $plugin->information();
     
     //Check if plugin information was returned
-    if(count($infoarr) !== 0){
+    if(is_countable($infoarr) && count($infoarr) !== 0){
         //Loop through each command
         foreach($infoarr as $info){
             //Check if command name is valid
@@ -166,7 +166,7 @@ function call_event($type,$data){
             }
             
             //Apply group specific roles
-            if(!empty($f3->get('set_role_new_members')) && count($f3->get('set_role_new_members')) > 0){
+            if(!empty($f3->get('set_role_new_members')) && is_countable($f3->get('set_role_new_members')) && count($f3->get('set_role_new_members')) > 0){
                 //Loop through each guild
                 foreach($f3->get('set_role_new_members') as $guild){
                     //Check if guild exists in config
@@ -532,7 +532,7 @@ function is_admin($userid){
         //Admin cache is empty, pull in from DB
         $logger->info("Admin cache empty, populating from DB.");
         $admins = $db->exec("SELECT `key`, `value1`, `value2`, `value3` FROM config WHERE `key` = 'admins' AND bot_id = ?",array(1=>$f3->get('instance')));
-        if (count($admins) !== 0){
+        if (is_countable($admins) && count($admins) !== 0){
             $f3->set('admins',$admins);
             foreach ($f3->get('admins') as $admin){
                 //Check if ID matches
@@ -554,7 +554,7 @@ function is_bot_owner($user_id){
     global $f3;
 
     //Check if bot owner has been defined
-    if(!empty($f3->get('bot_owners')) && count($f3->get('bot_owners')) > 0){
+    if(!empty($f3->get('bot_owners')) && is_countable($f3->get('bot_owners')) && count($f3->get('bot_owners')) > 0){
         //Loop through user id
         foreach($f3->get('bot_owners') as $admin_id){
             //Check if given user id is a bot owner
@@ -577,13 +577,13 @@ function find_channel($channel_id){
     $guilds = $discord->guilds;   
 
     //Check if guild list is empty
-    if(count($guilds) > 0){
+    if(is_countable($guilds) && count($guilds) > 0){
         //Loop through guilds
         foreach ($guilds as $guild){
             //Get channel
             $channel = $guild->channels->getAll('id',$channel_id);
             //Check if channel object was returned
-            if(count($channel) > 0){
+            if(is_countable($channel) && count($channel) > 0){
                 return $channel;
             }
         }
@@ -600,13 +600,13 @@ function find_channel_name($channel_name){
     $guilds = $discord->guilds;   
 
     //Check if guild list is empty
-    if(count($guilds) > 0){
+    if(is_countable($guilds) && count($guilds) > 0){
         //Loop through guilds
         foreach ($guilds as $guild){
             //Get channel
             $channel = $guild->channels->getAll('name',$channel_id);
             //Check if channel object was returned
-            if(count($channel) > 0){
+            if(is_countable($channel) && count($channel) > 0){
                 return $channel;
             }
         }
@@ -623,13 +623,13 @@ function find_member($user_id){
     $guilds = $discord->guilds;
 
     //Check if guild list is empty
-    if(count($guilds) > 0){
+    if(is_countable($guilds) && count($guilds) > 0){
         //Loop through guilds
         foreach ($guilds as $guild){
             //Get member
             $member = $guild->members->get('id',$user_id);
             //Check if member object was returned
-            if(count($member) > 0){
+            if(is_countable($member) && count($member) > 0){
                 return $member;
             }
         }
@@ -646,7 +646,7 @@ function find_guild($guild_id){
     $guild = $discord->guilds->get('id', $guild_id);
 
     //Check if guild object was returned
-    if(count($guild) > 0){
+    if(is_countable($guild) && count($guild) > 0){
         return $guild;
     }
     //Nothing found
@@ -662,13 +662,13 @@ function get_all_member_guilds($user_id){
     $guilds = $discord->guilds;
 
     //Check if guild list is empty
-    if(count($guilds) > 0){
+    if(is_countable($guilds) && count($guilds) > 0){
         //Loop through guilds
         foreach ($guilds as $guild){
             //Get member
             $member = $guild->members->get('id',$user_id);
             //Check if member object was returned
-            if(count($member) > 0){
+            if(is_countable($member) && count($member) > 0){
                 $userguilds[$member->guild_id] = $member;
             }
         }
@@ -770,7 +770,7 @@ function get_last_seen($userid){
     try{
         //Get user last seen time
         $lastseendb = $db->exec('SELECT user_id,user_name,last_online,last_spoke FROM espybot.last_seen WHERE user_id = ? AND bot_id = ? LIMIT 1',array(1=>$userid,2=>$f3->get('instance')));
-        if(count($lastseendb) !== 0){
+        if(is_countable($lastseendb) && count($lastseendb) !== 0){
             //Pack data
             $return = array(
                 'user_id' => $lastseendb[0]['user_id'],
@@ -796,13 +796,13 @@ function get_name_history($userid){
     try{
         //Get user last seen time
         $namehistory = $db->exec('SELECT user_name FROM name_history WHERE user_id = ? AND bot_id = ?',array(1=>$userid,2=>$f3->get('instance')));
-        if(count($namehistory) !== 0){
+        if(is_countable($namehistory) && count($namehistory) !== 0){
             $return = "";
             //Pack data
             $i = 0;
             foreach($namehistory as $name){
                 $i++;
-                if($i == count($namehistory)){
+                if(is_countable($namehistory) && $i == count($namehistory)){
                     $return .= $name['user_name']." ";
                 }else{
                     $return .= $name['user_name']." | ";
@@ -1071,7 +1071,7 @@ function delete_messages($channel_id, $message_num){
                         $messages[$value->id] = $value;
                     }
                     //Check if channel has any pinned messages
-                    if(count($pinned) != 0){
+                    if(is_countable($pinned) && count($pinned) != 0){
                         //Loop through pinned messages
                         foreach($pinned as $pin){
                             $logger->debug("Checking for pinned message ID ".$pin->id);
@@ -1297,14 +1297,14 @@ function update_invites(){
     $f3->set('curr_code',array());
 
     //Parse guild info from API and compare
-    if (count($guildInfo) !== 0){
+    if (is_countable($guildInfo) && count($guildInfo) !== 0){
         //Loop through guilds
         foreach ($guildInfo as $guild){
             try{
                 //Get invites for guild
                 $guild->getInvites()->then(function ($invites) use ($guildInvites, $guild, $logger, $curr_code, $db, $f3, $discord){
                     //$logger->debug("INVITES - Got ".count($invites)." for ".$guild->name.".");
-                    if(count($invites) !== 0){
+                    if(is_countable($invites) && count($invites) !== 0){
                         foreach($invites as $invite){
                             $guildInvites[$invite->code]['code'] = $invite->code;
                             $guildInvites[$invite->code]['max_age'] = $invite->max_age;
@@ -1322,7 +1322,7 @@ function update_invites(){
                     $guild_id = $guild->id;
                     
                     //Parse invite info
-                    if (count($guildInvites) !== 0){
+                    if (is_countable($guildInvites) && count($guildInvites) !== 0){
                         //Set admin channel IDs or owner ID if not set
                         $admin_chan = get_adminchan($guild_id);
                         //Loop through invites from API
@@ -1355,7 +1355,7 @@ function update_invites(){
                             }
                             
                             //Check if this code exists in the db
-                            if(count($db_inviteinfo) !== 0){
+                            if(is_countable($db_inviteinfo) && count($db_inviteinfo) !== 0){
                                 //Check uses to see if the number has gone up
                                 if ($uses != $db_inviteinfo[0]["uses"]){
                                     //Amount of uses has changed, update in db
@@ -1404,7 +1404,7 @@ function update_invites(){
                     $db_invites = $db->exec('SELECT id,guild,code,maxage,created_at,uses,inviter_id,channel_id FROM invites WHERE guild = ? AND bot_id = ?', array(1=>$guild_id,2=>$f3->get('instance')));
                     $curr_code = $f3->get('curr_code');
                     //Parse invites from database and compare
-                    if (count($db_invites) !== 0){
+                    if (is_countable($db_invites) && count($db_invites) !== 0){
                         //Loop through db invites
                         foreach ($db_invites as $db_invite){
                             //Set admin channel IDs or owner ID if not set

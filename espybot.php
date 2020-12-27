@@ -69,7 +69,7 @@ $commands = array();
 $plugin_cmds = array();
 foreach ($plugins as $plugin) {
     $infoarr = $plugin->information();
-    if(count($infoarr) !== 0){
+    if(is_countable($infoarr) && count($infoarr) !== 0){
         foreach($infoarr as $info){
             if ($info["name"]){
                 $commands[] = $f3->get('trigger').$info["name"];
