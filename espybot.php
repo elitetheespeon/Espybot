@@ -111,7 +111,7 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
     if($msgData->author->id != $discord->id) {
         //Check for command, so we don't do all of this expensive shit for a random message
         if ($command = containsTrigger($msgData->content, $commands)) {
-            $channelData = $msgData->getChannelAttribute();
+            $channelData = $msgData->channel;
 
             //Log command
             $logger->debug("Command processed -> ".$msgData->content);
@@ -139,7 +139,7 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
                     "attachments" => $msgData->attachments
                 ),
                 "channel" => $channelData,
-                "guild" => $channelData->is_private ? array("name" => "PM") : array("id" => $channelData->guild_id, "name" => $channelData->getGuildAttribute()->name),
+                "guild" => $channelData->is_private ? array("name" => "PM") : array("id" => $channelData->guild_id, "name" => $channelData->guild->name),
                 "object" => $msgobject
             );
 
@@ -162,7 +162,8 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
             }
         }else{
             //This is not a command, process for logging
-            $channelData = $msgData->getChannelAttribute();
+            //dump($msgData->channel);
+            $channelData = $msgData->channel;
 
             //If PM, set channel name to username sending message
             if($channelData->is_private == true)
@@ -184,7 +185,7 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
                     "attachments" => $msgData->attachments
                 ),
                 "channel" => $channelData,
-                "guild" => $channelData->is_private ? array("name" => "PM") : array("id" => $channelData->guild_id, "name" => $channelData->getGuildAttribute()->name),
+                "guild" => $channelData->is_private ? array("name" => "PM") : array("id" => $channelData->guild_id, "name" => $channelData->guild->name),
                 "botData" => $botData
             );
             

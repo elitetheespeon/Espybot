@@ -57,7 +57,7 @@ class Botlog {
      */
     public function info($logMessage, $logData = array()) {
         $logMessage = $this->c->apply('bold', $this->c->white($logMessage));
-        $this->log_err->addInfo($logMessage);
+        $this->log_err->info($logMessage);
     }
 
     /**
@@ -68,7 +68,7 @@ class Botlog {
      */
     public function debug($logMessage, $logData = array()) {
         $logMessage = $this->c->apply('bold', $this->c->blue($logMessage));
-        $this->log_err->addDebug($logMessage, $logData);
+        $this->log_err->debug($logMessage, $logData);
     }
 
     /**
@@ -79,7 +79,7 @@ class Botlog {
      */
     public function warn($logMessage, $logData = array()) {
         $logMessage = $this->c->apply('bold', $this->c->yellow($logMessage));
-        $this->log_err->addWarning($logMessage, $logData);
+        $this->log_err->warning($logMessage, $logData);
     }
 
     /**
@@ -90,7 +90,7 @@ class Botlog {
      */
     public function err($logMessage, $logData = array()) {
         $logMessage = $this->c->apply('bold', $this->c->red($logMessage));
-        $this->log_err->addError($logMessage, $logData);
+        $this->log_err->error($logMessage, $logData);
     }
 
     /**
@@ -101,7 +101,7 @@ class Botlog {
      */
     public function notice($logMessage, $logData = array()) {
         $logMessage = $this->c->apply('bold', $this->c->green($logMessage));
-        $this->log_err->addNotice($logMessage, $logData);
+        $this->log_err->notice($logMessage, $logData);
     }
 
     /**
@@ -112,7 +112,7 @@ class Botlog {
      */
     public function test($logMessage, $logData = array()) {
         $logMessage = $this->c->apply('bold', $this->c->orange($logMessage));
-        $this->log_err->addInfo($logMessage, $logData);
+        $this->log_err->info($logMessage, $logData);
     }
     
     /**
@@ -122,6 +122,6 @@ class Botlog {
      */
     public function message($logMessage) {
         $logMessage = $this->c->apply('bold', $this->c->white($logMessage));
-        $this->log_msg->addNotice($logMessage);
+        $this->log_msg->notice($logMessage);
     }
 }
