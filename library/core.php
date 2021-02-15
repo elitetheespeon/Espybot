@@ -584,25 +584,17 @@ function find_channel($channel_id){
         //Loop through guilds
         foreach ($guilds as $guild){
             //Get channel
-            $guild->channels->freshen()->done(
-                function ($channels) use ($channel){
-                    //Set channel
-                    //dump($channels);
-                    count($channels);
-                    exit();
-
-
-                    //Check if channel object was returned
-                    if(is_countable($channels) && count($channels) > 0){
-                        return $channels;
-                    }
-                }
-            );
+            
+            $channel = $guild->channels->offsetGet($channel_id);
+            dump($channels->name);
             
             //Check if channel object was returned
-            return false;
+            if($channel->name){
+                return $channel;
+            }
         }
     }
+    
     //Nothing found
     return false;
 }
@@ -879,66 +871,8 @@ function send_embed_message($channel_id,$embed,$message = ''){
         return true;
     }
 
-    //Lookup channel and user ID
-    $channel = find_channel($channel_id);
-    
-    //If no channel was found, check user
-    if(!$channel){
-        //Find matching user
-        $user = find_member($channel_id);
-        
-        //Check if user was returned
-        if($user){
-            //User found, set as channel
-            $channel = $user;
-        }else{
-            //No user found, we cant do anything here
-            $logger->err("SEND Embed - Not a user ID or Channel ID!");
-            return false;
-        }
-    }
-
-    //Check if valid object
-    if(!$channel){
-        //This is not a channel ID or User ID
-        $logger->err("SEND Embed - Channel info null!");
-        return false;
-    }
-
-    //Check if object is a member
-    if(get_class($channel) == 'Discord\Parts\User\Member'){
-        //Change to user object
-        $channel = $channel->user;
-    }elseif(get_class($channel) == 'Discord\Helpers\Collection'){
-        //Change to channel object
-        $channel = $channel->first();
-    }
-    
-    //Send embedded messaage
-    try{
-        $channel->sendMessage(null, false, $embed)
-            ->then(function ($response) use ($logger){
-                //Message was sent successfully
-            })
-            ->otherwise(function ($e) use ($logger, $channel_id, $embed, $message, $discord){
-                //An error was encountered
-                $logger->err("Send Embed - Error: ".$e->getMessage());
-                
-                //Pick random time between 1 and 60 seconds
-                $time = rand(1,60);
-                $logger->err("Send Embed - Setting timer for next message in {$time} seconds.");
-                
-                //Set a timer to retry
-                $discord->loop->addTimer(rand(1,60), function () use ($channel_id, $embed, $message, $logger){
-                    //Send message again
-                    $logger->warn("Send Embed - Retrying previous failed message...");
-                    send_embed_message($channel_id, $embed, $message);
-                });
-            });
-    }catch(Exception $e){
-        //Exception caught
-        $logger->err("Send Embed - Error: ".$e->getMessage());
-    }
+    //Send message
+    send_message($channel_id,$message,false,false,$embed);
 }
 
 function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null){
@@ -960,6 +894,20 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
     if(!$channel_id){
         
         $logger->err("SEND MSG - Channel info null!");
+        return false;
+    }
+
+    //Check if valid object
+    if(!is_object($channel_id) && is_numeric($channel_id)){
+        //Lookup channel
+        dump($channel_id);
+        $channel_id = find_channel($channel_id);
+        dump($channel_id);
+    }
+
+    //Check if valid object
+    if(!is_object($channel_id)){
+        $logger->err("SEND MSG - Channel Object not passed!");
         return false;
     }
 
@@ -1307,7 +1255,7 @@ function update_invites(){
             try{
                 //Get invites for guild
                 $guild->getInvites()->then(function ($invites) use ($guildInvites, $guild, $logger, $curr_code, $db, $f3, $discord){
-                    //$logger->debug("INVITES - Got ".count($invites)." for ".$guild->name.".");
+                    $logger->debug("INVITES - Got ".count($invites)." for ".$guild->name.".");
                     if(is_countable($invites) && count($invites) !== 0){
                         foreach($invites as $invite){
                             $guildInvites[$invite->code]['code'] = $invite->code;
@@ -1332,7 +1280,7 @@ function update_invites(){
                         //Loop through invites from API
                         foreach ($guildInvites as $invite){
                             //Store current invite info
-                            //$logger->debug("INVITES - Parsing API invite code ".$invite["code"]." for ".$guild->name." used ".$invite["uses"]." times.");
+                            $logger->debug("INVITES - Parsing API invite code ".$invite["code"]." for ".$guild->name." used ".$invite["uses"]." times.");
                             $maxage = $invite["max_age"];
                             $code = $invite["code"];
                             $created_at = $invite["created_at"];
@@ -1404,7 +1352,7 @@ function update_invites(){
                     }
                     
                     //Keep database in sync with API data
-                    //$logger->debug("INVITES - Checking database for ".$guild->name.".");
+                    $logger->debug("INVITES - Checking database for ".$guild->name.".");
                     $db_invites = $db->exec('SELECT id,guild,code,maxage,created_at,uses,inviter_id,channel_id FROM invites WHERE guild = ? AND bot_id = ?', array(1=>$guild_id,2=>$f3->get('instance')));
                     $curr_code = $f3->get('curr_code');
                     //Parse invites from database and compare
@@ -1414,7 +1362,7 @@ function update_invites(){
                             //Set admin channel IDs or owner ID if not set
                             $admin_chan = get_adminchan($db_invite['guild']);
                             //Store database invite info
-                            //$logger->debug("INVITES - Checking stored code ".$db_invite["code"]." for ".$guild->name." used ".$db_invite["uses"]." times.");
+                            $logger->debug("INVITES - Checking stored code ".$db_invite["code"]." for ".$guild->name." used ".$db_invite["uses"]." times.");
                             $db_code = $db_invite["code"];
                             
                             //Check if invite code still exists on discord

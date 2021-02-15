@@ -48,8 +48,8 @@ class reply{
         //Check if the chat message contains the fucking trigger
         if(strpos($message,"<@".$this->discord->id.">") !== false || stripos($message,$this->discord->username) !== false){
             $this->get_response($message, false, $guildID, $fromID)
-                ->then(function ($reply) use ($message, $channelName, $guildName, $channelID, $fromID, $guildID) {
-                    send_message($channelID,$fromID,$reply);
+                ->then(function ($reply) use ($msgData, $message, $channelName, $guildName, $channelID, $fromID, $guildID) {
+                    send_message($msgData['channel'],$reply,false,false,false);
                 })
                 ->otherwise(function ($error) use ($message, $channelName, $guildName, $channelID, $fromID, $guildI){
                     $this->logger->debug("REPLY - Unhandled Error in response: {$error}");

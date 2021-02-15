@@ -93,7 +93,7 @@ class about{
         ]);
 
         //Send message to chat
-        send_embed_message($reply_to,$embed);
+        send_message($msgData['channel'],false,false,false,$embed);
 
         //Log action
         if($channelName){
