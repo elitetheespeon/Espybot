@@ -485,14 +485,10 @@ function send_notification($channelID,$userID,$message,$data,$guild_id){
     //Check if admin channel was given
     if(find_channel($channelID)){
         //Send message to admin channel
-//eval(\Psy\sh());
-//dump($channelID);
-//dump($data);
         send_embed_message($channelID,$data);
     }else{
         //Get guild
         $guild = find_guild($guild_id);
-        
         //Check if guild name was already added
         if(strpos($data->title, $guild->name) === false) {
             //Set title of embed to guild name
@@ -641,12 +637,13 @@ function find_guild($guild_id){
     global $discord;
     
     //Get guild list
-    $guild = $discord->guilds->get('id', $guild_id);
+    $guild = $discord->guilds->offsetGet($guild_id);
 
     //Check if guild object was returned
-    if(is_countable($guild) && count($guild) > 0){
+    if($guild->name){
         return $guild;
     }
+    
     //Nothing found
     return false;
 }
