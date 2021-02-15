@@ -45,7 +45,7 @@ if($f3->get('webserver')){
             //Check if message was sent
             if($result->requestdata['message']){
                 //Send message to specified channel
-                //send_message($args['id'],null,$result->requestdata['message']);            
+                send_message($args['id'],null,$result->requestdata['message']);            
             }
             return $response;
         });
@@ -70,8 +70,8 @@ if($f3->get('webserver')){
                         $message = 'New commit pushed to **'.$eventdata->ref.'** on **'.$project_name.'** by **'.$push_username.'**'."\r\n";
                         $message .= '[**'.count($eventdata->added).'** files added : **'.count($eventdata->removed).'** files removed : **'.count($eventdata->modified).'** files modified]'."\r\n";
                         $message .= "```".$commit->message."```\r\n";
-                        //send_message($channel,null,$message);
-                        //send_message($channel,null,$message);
+                        send_message('91930868951584768',null,$message);
+                        send_message('147146956207030272',null,$message);
                     }
                 }
             }

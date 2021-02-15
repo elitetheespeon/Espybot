@@ -60,10 +60,10 @@ class admin{
         //Set the guild ID for server or PM
         if ($msgData["guild"]["id"] !== null){
             $guildID = $msgData["guild"]["id"];
-            $reply_to = $msgData['channel'];
+            $reply_to = $channelID;
         }else{
             $guildID = null;
-            $reply_to = $msgData['channel'];
+            $reply_to = $fromID;
         }
         
         //Check if trigger was processed
@@ -548,7 +548,7 @@ class admin{
         }
 
         //Send message
-        send_message($msgData['channel'],false,$sendmessage,false,false);
+        send_message($channel_id, null, $sendmessage);
 
         //Send response
         $this->command_response('success', 'Send Message', "Sent message to channel {$channel_id}.", $reply_to);

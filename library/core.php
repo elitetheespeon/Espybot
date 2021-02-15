@@ -140,15 +140,12 @@ function call_event($type,$data){
             }
             
             //Build embed message
-            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                'title' => "**User joined**",
-                'description' => "**Name:** {$j_username}#{$j_desc} \r\n **ID:** {$j_userid} {$ohdata}",
-                'color' => "3532089",
-                'timestamp' => false,
-                'thumbnail' => $discord->factory(Discord\Parts\Embed\Image::class, [
-                    'url' => $j_avatar
-                ]),
-            ]);
+            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                ->setTitle("**User joined**")
+                ->setDescription("**Name:** {$j_username}#{$j_desc} \r\n **ID:** {$j_userid} {$ohdata}")
+                ->setColor(3532089)
+                ->setTimestamp()
+                ->setImage($j_avatar);
     
             //Send notification
             send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$data->guild->id);
@@ -215,12 +212,11 @@ function call_event($type,$data){
             $message = "User ".$j_username."#".$j_desc." has left chat [ID:".$j_userid."]";
     
             //Build embed message
-            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                'title' => "**User left**",
-                'description' => "**Name:** {$j_username}#{$j_desc} | **ID:** {$j_userid}",
-                'color' => "16711722",
-                'timestamp' => false,
-            ]);
+            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                ->setTitle("**User left**")
+                ->setDescription("**Name:** {$j_username}#{$j_desc} | **ID:** {$j_userid}")
+                ->setColor(16711722)
+                ->setTimestamp();
             
             //Send notification
             send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$data->guild->id);
@@ -263,12 +259,11 @@ function call_event($type,$data){
             $message = "User ".$j_username."#".$j_desc." was banned from chat ".$reason."[ID:".$j_userid."]";
     
             //Build embed message
-            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                'title' => "**User banned**",
-                'description' => "**Name:** {$j_username}#{$j_desc} | **ID:** {$j_userid}",
-                'color' => "16711722",
-                'timestamp' => false,
-            ]);
+            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                ->setTitle("**User banned**")
+                ->setDescription("**Name:** {$j_username}#{$j_desc} | **ID:** {$j_userid}")
+                ->setColor(16711722)
+                ->setTimestamp();
             
             //Send notification
             send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$data->guild->id);
@@ -305,12 +300,11 @@ function call_event($type,$data){
             $message = "User ".$j_username."#".$j_desc." was unbanned from chat [ID:".$j_userid."]";
             
             //Build embed message
-            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                'title' => "**User unbanned**",
-                'description' => "**Name:** {$j_username}#{$j_desc} | **ID:** {$j_userid}",
-                'color' => "16763904",
-                'timestamp' => false,
-            ]);
+            $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                ->setTitle("**User unbanned**")
+                ->setDescription("**Name:** {$j_username}#{$j_desc} | **ID:** {$j_userid}")
+                ->setColor(16763904)
+                ->setTimestamp();
             
             //Send notification
             send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$data->guild->id);
@@ -388,12 +382,11 @@ function call_event($type,$data){
                 $message = $channel_type." channel #".$channel_name." created [ID:".$channel_id."]";
     
                 //Build embed message
-                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                    'title' => "**{$channel_type} channel created**",
-                    'description' => "**Name:** #{$channel_name} | **ID:** {$channel_id}",
-                    'color' => "3532089",
-                    'timestamp' => false,
-                ]);
+                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                ->setTitle("**{$channel_type} channel created**")
+                ->setDescription("**Name:** #{$channel_name} | **ID:** {$channel_id}")
+                ->setColor(3532089)
+                ->setTimestamp();
                 
                 //Send notification
                 send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$data->guild->id);
@@ -425,12 +418,11 @@ function call_event($type,$data){
                 $message = $channel_type." channel #".$channel_name." deleted [ID:".$channel_id."]";
                 
                 //Build embed message
-                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                    'title' => "**{$channel_type} channel deleted**",
-                    'description' => "**Name:** #{$channel_name} | **ID:** {$channel_id}",
-                    'color' => "16711722",
-                    'timestamp' => false,
-                ]);
+                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                ->setTitle("**{$channel_type} channel deleted**")
+                ->setDescription("**Name:** #{$channel_name} | **ID:** {$channel_id}")
+                ->setColor(16711722)
+                ->setTimestamp();
                 
                 //Send notification
                 send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$data->guild->id);
@@ -497,13 +489,12 @@ function send_notification($channelID,$userID,$message,$data,$guild_id){
     }else{
         //Get guild
         $guild = find_guild($guild_id);
-        
         //Check if guild name was already added
         if(strpos($data->title, $guild->name) === false) {
             //Set title of embed to guild name
             $data->title = "{$guild->name}: {$data->title}";
         }
-
+        
         //Send message to bot admin
         send_embed_message($userID,$data);
     }
@@ -574,10 +565,7 @@ function find_channel($channel_id){
     global $discord;
     
     //Get guild list
-    $guilds = $discord->guilds;   
-
-    //Set channel var
-    $channel = [];
+    $guilds = $discord->guilds;
 
     //Check if guild list is empty
     if(is_countable($guilds) && count($guilds) > 0){
@@ -586,7 +574,6 @@ function find_channel($channel_id){
             //Get channel
             
             $channel = $guild->channels->offsetGet($channel_id);
-            dump($channels->name);
             
             //Check if channel object was returned
             if($channel->name){
@@ -650,12 +637,13 @@ function find_guild($guild_id){
     global $discord;
     
     //Get guild list
-    $guild = $discord->guilds->get('id', $guild_id);
+    $guild = $discord->guilds->offsetGet($guild_id);
 
     //Check if guild object was returned
-    if(is_countable($guild) && count($guild) > 0){
+    if($guild->name){
         return $guild;
     }
+    
     //Nothing found
     return false;
 }
@@ -871,11 +859,73 @@ function send_embed_message($channel_id,$embed,$message = ''){
         return true;
     }
 
-    //Send message
-    send_message($channel_id,$message,false,false,$embed);
+    //Lookup channel and user ID
+    $channel = find_channel($channel_id);
+    
+    //If no channel was found, check user
+    if(!$channel){
+        //Find matching user
+        $user = find_member($channel_id);
+        
+        //Check if user was returned
+        if($user){
+            //User found, set as channel
+            $channel = $user;
+        }else{
+            //No user found, we cant do anything here
+            $logger->err("SEND Embed - Not a user ID or Channel ID!");
+            return false;
+        }
+    }
+
+    //Check if valid object
+    if(!$channel){
+        //This is not a channel ID or User ID
+        $logger->err("SEND Embed - Channel info null!");
+        return false;
+    }
+
+    //dump($channel);
+
+    //Check if object is a member
+    if(get_class($channel) == 'Discord\Parts\User\Member'){
+        //Change to user object
+        $channel = $channel->user;
+    }elseif(get_class($channel) == 'Discord\Helpers\Collection'){
+        //Change to channel object
+        $channel = $channel->first();
+    }
+    
+    //dump($channel);
+    
+    //Send embedded messaage
+    try{
+        $channel->sendMessage('', false, $embed)
+            ->then(function ($response) use ($logger){
+                //Message was sent successfully
+            })
+            ->otherwise(function ($e) use ($logger, $channel_id, $embed, $message, $discord){
+                //An error was encountered
+                $logger->err("Send Embed - Error: ".$e->getMessage());
+                
+                //Pick random time between 1 and 60 seconds
+                $time = rand(1,60);
+                $logger->err("Send Embed - Setting timer for next message in {$time} seconds.");
+                
+                //Set a timer to retry
+                $discord->loop->addTimer(rand(1,60), function () use ($channel_id, $embed, $message, $logger){
+                    //Send message again
+                    $logger->warn("Send Embed - Retrying previous failed message...");
+                    send_embed_message($channel_id, $embed, $message);
+                });
+            });
+    }catch(Exception $e){
+        //Exception caught
+        $logger->err("Send Embed - Error: ".$e->getMessage());
+    }
 }
 
-function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null){
+function send_message($channel_id,$user_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null){
     //Pull in globals
     global $discord,$logger;
 
@@ -884,15 +934,25 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
         //Loop through each channel ID
         foreach($channel_id as $channel){
             //Run each channel ID through this function
-            send_message($channel,$msgcontent,$codeblock = null,$codelang = null,$embed = null);
+            send_message($channel,$user_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null);
         }
         //Get out of this loop
         return true;
     }
 
+    //Lookup channel and user ID
+    $channel = find_channel($channel_id);
+    $user = find_member($user_id);
+
+    //Check if channel is valid
+    if($channel == false && $user){
+        //Invalid channel, but valid user
+        $channel = $user;
+    }
+
     //Check if valid object
-    if(!$channel_id){
-        
+    if(!$channel){
+        //This is not a channel ID or User ID
         $logger->err("SEND MSG - Channel info null!");
         return false;
     }
@@ -900,9 +960,7 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
     //Check if valid object
     if(!is_object($channel_id) && is_numeric($channel_id)){
         //Lookup channel
-        dump($channel_id);
         $channel_id = find_channel($channel_id);
-        dump($channel_id);
     }
 
     //Check if valid object
@@ -912,17 +970,18 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
     }
 
     //Check if object is a member
-    if(!get_class($channel_id) == 'Discord\Parts\Channel\Channel'){
-        
-        $logger->err("SEND MSG - Channel info mismatch!");
-        return false;
+    if(get_class($channel) == 'Discord\Parts\User\Member'){
+        //Change to user object
+        $channel = $channel->user;
+    }elseif(get_class($channel) == 'Discord\Helpers\Collection'){
+        //Change to channel object
+        $channel = $channel->first();
     }
 
     //Check if message is over 994 characters
     if(strlen($msgcontent) > 990){
         $msgcontent = str_split($msgcontent, 990);
     }
-
     //Check if message is broken into parts
     if(is_array($msgcontent)){
         //Loop through message parts
@@ -930,18 +989,18 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
             //Send reply with our message
             try{
                 if(!$codeblock){
-                    $reply = $channel_id->sendMessage($msg)
+                    $reply = $channel->sendMessage($msg)
                         ->otherwise(function ($e) use ($logger){
                             $logger->err("SEND MSG - Error: ".$e->getMessage());
                         });
                 }else{
                     if($codelang){
-                        $reply = $channel_id->sendMessage('```'.$codelang."\r\n".$msg.'```')
+                        $reply = $channel->sendMessage('```'.$codelang."\r\n".$msg.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
                     }else{
-                        $reply = $channel_id->sendMessage('```'.$msg.'```')
+                        $reply = $channel->sendMessage('```'.$msg.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
@@ -956,7 +1015,7 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
         try{
             if($embed){
                 //$reply = $channel->sendMessage(null, false, $embed);
-                $channel_id->sendMessage('', false, $embed)
+                $channel->sendMessage(null, false, $embed)
                     ->then(function ($response){
                         //Resolve promise
                         //dump($response);
@@ -966,18 +1025,18 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
                     });
             }else{
                 if(!$codeblock){
-                    $reply = $channel_id->sendMessage($msgcontent)
+                    $reply = $channel->sendMessage($msgcontent)
                         ->otherwise(function ($e) use ($logger){
                             $logger->err("SEND MSG - Error: ".$e->getMessage());
                         });
                 }else{
                     if($codelang){
-                        $reply = $channel_id->sendMessage('```'.$codelang."\r\n".$msgcontent.'```')
+                        $reply = $channel->sendMessage('```'.$codelang."\r\n".$msgcontent.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
                     }else{
-                        $reply = $channel_id->sendMessage('```'.$msgcontent.'```')
+                        $reply = $channel->sendMessage('```'.$msgcontent.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
@@ -1319,12 +1378,11 @@ function update_invites(){
                                     //Build message
                                     $message = "Invite code [".$code."] created by ".$inviter_name." has been used for channel ".$channel_name;
                                     //Build embed message
-                                    $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                                        'title' => "Invite code used",
-                                        'description' => "**Code:** {$code} | **Inviter:** {$inviter_name} | **Channel:** {$channel_name}",
-                                        'color' => "16763904",
-                                        'timestamp' => false,
-                                    ]);
+                                    $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                                        ->setTitle("Invite code used")
+                                        ->setDescription("**Code:** {$code} | **Inviter:** {$inviter_name} | **Channel:** {$channel_name}")
+                                        ->setColor(16763904)
+                                        ->setTimestamp();
                                     //Send notification
                                     send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$guild_id);
                                 }
@@ -1339,12 +1397,11 @@ function update_invites(){
                                 //Build message
                                 $message = "New invite code added by user ".$inviter_name." [".$code."] for channel ".$channel_name." with expiry of: ".$maxage;
                                 //Build embed message
-                                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                                    'title' => "New invite code added",
-                                    'description' => "**Code:** {$code} | **Inviter:** {$inviter_name} | **Channel:** {$channel_name} | **Expires:** {$maxage} seconds",
-                                    'color' => "16763904",
-                                    'timestamp' => false,
-                                ]);
+                                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                                    ->setTitle("New invite code added")
+                                    ->setDescription("**Code:** {$code} | **Inviter:** {$inviter_name} | **Channel:** {$channel_name} | **Expires:** {$maxage} seconds")
+                                    ->setColor(16763904)
+                                    ->setTimestamp();
                                 //Send notification
                                 send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$guild_id);
                             }
@@ -1372,12 +1429,12 @@ function update_invites(){
                                 //Build message
                                 $message = "Invite code [".$db_code."] removed/expired.";
                                 //Build embed message
-                                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class, [
-                                    'title' => "Invite code removed/expired",
-                                    'description' => "**Code:** {$db_code}",
-                                    'color' => "16763904",
-                                    'timestamp' => false,
-                                ]);
+                                $embed = $discord->factory(\Discord\Parts\Embed\Embed::class)
+                                    ->setTitle("Invite code removed/expired")
+                                    ->setDescription("**Code:** {$db_code}")
+                                    ->setColor(16763904)
+                                    ->setTimestamp();
+
                                 //Send notification
                                 send_notification($admin_chan,$f3->get('bot_owners'),$message,$embed,$guild_id);
                             }
