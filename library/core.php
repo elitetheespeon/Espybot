@@ -871,11 +871,69 @@ function send_embed_message($channel_id,$embed,$message = ''){
         return true;
     }
 
-    //Send message
-    send_message($channel_id,$message,false,false,$embed);
+    //Lookup channel and user ID
+    $channel = find_channel($channel_id);
+    
+    //If no channel was found, check user
+    if(!$channel){
+        //Find matching user
+        $user = find_member($channel_id);
+        
+        //Check if user was returned
+        if($user){
+            //User found, set as channel
+            $channel = $user;
+        }else{
+            //No user found, we cant do anything here
+            $logger->err("SEND Embed - Not a user ID or Channel ID!");
+            return false;
+        }
+    }
+
+    //Check if valid object
+    if(!$channel){
+        //This is not a channel ID or User ID
+        $logger->err("SEND Embed - Channel info null!");
+        return false;
+    }
+
+    //Check if object is a member
+    if(get_class($channel) == 'Discord\Parts\User\Member'){
+        //Change to user object
+        $channel = $channel->user;
+    }elseif(get_class($channel) == 'Discord\Helpers\Collection'){
+        //Change to channel object
+        $channel = $channel->first();
+    }
+    
+    //Send embedded messaage
+    try{
+        $channel->sendMessage(null, false, $embed)
+            ->then(function ($response) use ($logger){
+                //Message was sent successfully
+            })
+            ->otherwise(function ($e) use ($logger, $channel_id, $embed, $message, $discord){
+                //An error was encountered
+                $logger->err("Send Embed - Error: ".$e->getMessage());
+                
+                //Pick random time between 1 and 60 seconds
+                $time = rand(1,60);
+                $logger->err("Send Embed - Setting timer for next message in {$time} seconds.");
+                
+                //Set a timer to retry
+                $discord->loop->addTimer(rand(1,60), function () use ($channel_id, $embed, $message, $logger){
+                    //Send message again
+                    $logger->warn("Send Embed - Retrying previous failed message...");
+                    send_embed_message($channel_id, $embed, $message);
+                });
+            });
+    }catch(Exception $e){
+        //Exception caught
+        $logger->err("Send Embed - Error: ".$e->getMessage());
+    }
 }
 
-function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null){
+function send_message($channel_id,$user_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null){
     //Pull in globals
     global $discord,$logger;
 
@@ -884,15 +942,25 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
         //Loop through each channel ID
         foreach($channel_id as $channel){
             //Run each channel ID through this function
-            send_message($channel,$msgcontent,$codeblock = null,$codelang = null,$embed = null);
+            send_message($channel,$user_id,$msgcontent,$codeblock = null,$codelang = null,$embed = null);
         }
         //Get out of this loop
         return true;
     }
 
+    //Lookup channel and user ID
+    $channel = find_channel($channel_id);
+    $user = find_member($user_id);
+
+    //Check if channel is valid
+    if($channel == false && $user){
+        //Invalid channel, but valid user
+        $channel = $user;
+    }
+
     //Check if valid object
-    if(!$channel_id){
-        
+    if(!$channel){
+        //This is not a channel ID or User ID
         $logger->err("SEND MSG - Channel info null!");
         return false;
     }
@@ -912,17 +980,18 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
     }
 
     //Check if object is a member
-    if(!get_class($channel_id) == 'Discord\Parts\Channel\Channel'){
-        
-        $logger->err("SEND MSG - Channel info mismatch!");
-        return false;
+    if(get_class($channel) == 'Discord\Parts\User\Member'){
+        //Change to user object
+        $channel = $channel->user;
+    }elseif(get_class($channel) == 'Discord\Helpers\Collection'){
+        //Change to channel object
+        $channel = $channel->first();
     }
 
     //Check if message is over 994 characters
     if(strlen($msgcontent) > 990){
         $msgcontent = str_split($msgcontent, 990);
     }
-
     //Check if message is broken into parts
     if(is_array($msgcontent)){
         //Loop through message parts
@@ -930,18 +999,18 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
             //Send reply with our message
             try{
                 if(!$codeblock){
-                    $reply = $channel_id->sendMessage($msg)
+                    $reply = $channel->sendMessage($msg)
                         ->otherwise(function ($e) use ($logger){
                             $logger->err("SEND MSG - Error: ".$e->getMessage());
                         });
                 }else{
                     if($codelang){
-                        $reply = $channel_id->sendMessage('```'.$codelang."\r\n".$msg.'```')
+                        $reply = $channel->sendMessage('```'.$codelang."\r\n".$msg.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
                     }else{
-                        $reply = $channel_id->sendMessage('```'.$msg.'```')
+                        $reply = $channel->sendMessage('```'.$msg.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
@@ -956,7 +1025,7 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
         try{
             if($embed){
                 //$reply = $channel->sendMessage(null, false, $embed);
-                $channel_id->sendMessage('', false, $embed)
+                $channel->sendMessage(null, false, $embed)
                     ->then(function ($response){
                         //Resolve promise
                         //dump($response);
@@ -966,18 +1035,18 @@ function send_message($channel_id,$msgcontent,$codeblock = null,$codelang = null
                     });
             }else{
                 if(!$codeblock){
-                    $reply = $channel_id->sendMessage($msgcontent)
+                    $reply = $channel->sendMessage($msgcontent)
                         ->otherwise(function ($e) use ($logger){
                             $logger->err("SEND MSG - Error: ".$e->getMessage());
                         });
                 }else{
                     if($codelang){
-                        $reply = $channel_id->sendMessage('```'.$codelang."\r\n".$msgcontent.'```')
+                        $reply = $channel->sendMessage('```'.$codelang."\r\n".$msgcontent.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });
                     }else{
-                        $reply = $channel_id->sendMessage('```'.$msgcontent.'```')
+                        $reply = $channel->sendMessage('```'.$msgcontent.'```')
                             ->otherwise(function ($e) use ($logger){
                                 $logger->err("SEND MSG - Error: ".$e->getMessage());
                             });

@@ -548,7 +548,7 @@ class admin{
         }
 
         //Send message
-        send_message($msgData['channel'],false,$sendmessage,false,false);
+        send_message($channel_id, null, $sendmessage);
 
         //Send response
         $this->command_response('success', 'Send Message', "Sent message to channel {$channel_id}.", $reply_to);
