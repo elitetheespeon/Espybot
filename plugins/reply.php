@@ -122,6 +122,7 @@ class reply{
         return $deferred->promise();
     }
 
+/**
     function cleverio_response($guildID, $fromID, $message){
         //Start promise
         $deferred = new \React\Promise\Deferred();
@@ -176,6 +177,7 @@ class reply{
         //Return promise
         return $deferred->promise();
     }
+**/
 
     function cleverbot_response($guildID, $fromID, $message){
         //Start promise

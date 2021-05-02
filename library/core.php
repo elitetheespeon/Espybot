@@ -560,6 +560,19 @@ function is_bot_owner($user_id){
     }
 }
 
+function has_role($roles, $role_name){
+    //Loop through roles
+    foreach ($roles as $role){
+        //Check if role was found
+        if($role->name == $role_name){
+            //Role found
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 function find_channel($channel_id){
     //Pull in globals
     global $discord;
@@ -622,8 +635,9 @@ function find_member($user_id){
         foreach ($guilds as $guild){
             //Get member
             $member = $guild->members->get('id',$user_id);
-            //Check if member object was returned
-            if(is_countable($member) && count($member) > 0){
+
+            //Check if valid member object was returned
+            if($member instanceof Discord\Parts\User\Member){
                 return $member;
             }
         }
