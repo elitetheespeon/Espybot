@@ -79,45 +79,60 @@ class roleclaim{
                         $guild = $this->discord->guilds->get('id', $guildID);
                         $member = $guild->members->get('id', $fromID);
                         $role = $guild->roles->get('name', $msgarg);
+                        $this->logger->debug("GIVE ROLE: Looking up role {$role->name} for {$member->username} in {$guild->name}.");
                     }catch(Exception $e){
                         //Error
+                        $this->logger->error("GIVE ROLE: Exception [{$e}] Looking up role {$msgarg} for {$fromID} in {$guildID}.");
                         $role = null;
                         $allowed = false;
                     }
                     
                     //Check we have valid role
+                    $this->logger->debug("GIVE ROLE: Checking for valid role.");
                     if($role !== null){
                         //Valid role found, check if role is public
+                        $this->logger->debug("GIVE ROLE: Found valid role {$role->name}, checking if public.");
                         if($cache->search([$guildID, $role->id], 'publicroles')){
                             //Role is public
+                            $this->logger->debug("GIVE ROLE: Role {$role->name} is public and we are allowed to use it.");
                             $allowed = true;
                         }else{
                             //Role is not public
+                            $this->logger->debug("GIVE ROLE: Role {$role->name} is not public and we are not allowed to use it.");
                             $allowed = false;
                         }
                         
                         //Check if user has access to role
                         if($allowed){
-                            //User has access to role, add role to member
-                            if($member->addRole($role->id)) {
-                                 $guild->members->save($member)->then(function () use ($guild, $member){
-                                      $this->logger->notice("GIVE ROLE: Successfully added role for {$member->username} in {$guild->name}.");
-                                 }, function ($e){
-                                      $this->logger->warn("GIVE ROLE: Error adding role for {$member->username} in {$guild->name}: {$e->getMessage()}");
-                                 });
+                            //Check if user already has role
+                            if(!has_role($member->roles, $msgarg)) {
+                                //User has access to role, add role to member
+                                $member->addRole($role)
+                                ->then(function () use ($guild, $member){
+                                     $this->logger->notice("GIVE ROLE: Successfully added role for {$member->username} in {$guild->name}.");
+                                })
+                                ->otherwise(function ($e){
+                                     //Member already has the role
+                                     $this->logger->warn("GIVE ROLE: Skipped adding role for {$member->username} in {$guild->name}, user already has role.");
+                                });
+
+                                //Build embed
+                                $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
+                                    'title' => ':white_check_mark: Give Role',
+                                    'description' => "You have given the role {$role->name} to yourself.",
+                                    'timestamp' => false,
+                                ]);
                             }else{
-                                 //Member already has the role
-                                 $this->logger->warn("GIVE ROLE: Skipped adding role for {$member->username} in {$guild->name}, user already has role.");
+                                //Build embed
+                                $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
+                                    'title' => ':x: Give Role',
+                                    'description' => "You already have that role!",
+                                    'timestamp' => false,
+                                ]);
                             }
-                            
-                            //Build embed
-                            $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
-                                'title' => ':white_check_mark: Give Role',
-                                'description' => "You have given the role {$role->name} to yourself.",
-                                'timestamp' => false,
-                            ]);
                         }else{
                             //User does not have access to role
+                            $this->logger->warn("GIVE ROLE: Skipped adding role {$role->name} for {$member->username} in {$guild->name}, this role is not public.");
                             $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
                                 'title' => ':x: Give Role',
                                 'description' => "The role you specified does not exist or is not public.",
@@ -126,6 +141,7 @@ class roleclaim{
                         }
                     }else{
                         //Role name was not found
+                        $this->logger->warn("GIVE ROLE: Skipped adding role {$msgarg} for {$member->username} in {$guild->name}, this role cannot be found.");
                         $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
                             'title' => ':x: Give Role',
                             'description' => "The role you specified does not exist or is not public.",
@@ -144,8 +160,10 @@ class roleclaim{
                         $guild = $this->discord->guilds->get('id', $guildID);
                         $member = $guild->members->get('id', $fromID);
                         $role = $guild->roles->get('name', $msgarg);
+                        $this->logger->debug("REMOVE ROLE: Looking up role {$role->name} for {$member->username} in {$guild->name}.");
                     }catch(Exception $e){
                         //Error
+                        $this->logger->error("REMOVE ROLE: Exception [{$e}] Looking up role {$msgarg} for {$fromID} in {$guildID}.");
                         $role = null;
                         $allowed = false;
                     }
@@ -163,26 +181,35 @@ class roleclaim{
                         
                         //Check if user has access to role
                         if($allowed){
-                            //Remove role from member
-                            if($member->removeRole($role->id)) {
-                                 $guild->members->save($member)->then(function () use ($guild, $member){
-                                      $this->logger->notice("REMOVE ROLE: Successfully removed role for {$member->username} in {$guild->name}.");
-                                 }, function ($e){
-                                      $this->logger->warn("REMOVE ROLE: Error removing role for {$member->username} in {$guild->name}: {$e->getMessage()}");
-                                 });
-                            }else{
-                                 //Member already has the role
-                                 $this->logger->warn("REMOVE ROLE: Skipped removing role for {$member->username} in {$guild->name}, user already has role.");
-                            }
+                            //Check if user does not have role
+                            if(has_role($member->roles, $msgarg)) {
+                                //Remove role from member
+                                $member->removeRole($role->id)
+                                ->then(function () use ($guild, $member){
+                                     $this->logger->notice("REMOVE ROLE: Successfully removed role for {$member->username} in {$guild->name}.");
+                                })
+                                ->otherwise(function ($e){
+                                     //Member already has the role
+                                     $this->logger->warn("REMOVE ROLE: Skipped removing role for {$member->username} in {$guild->name}, user already has role.");
+                                });
                             
-                            //Build embed
-                            $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
-                                'title' => ':white_check_mark: Remove Role',
-                                'description' => "You have removed the role {$role->name} from yourself.",
-                                'timestamp' => false,
-                            ]);
+                                //Build embed
+                                $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
+                                    'title' => ':white_check_mark: Remove Role',
+                                    'description' => "You have removed the role {$role->name} from yourself.",
+                                    'timestamp' => false,
+                                ]);
+                            }else{
+                                //Build embed
+                                $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
+                                    'title' => ':x: Remove Role',
+                                    'description' => "You do not have that role!",
+                                    'timestamp' => false,
+                                ]);
+                            }
                         }else{
                             //User does not have access to role
+                            $this->logger->warn("REMOVE ROLE: Skipped adding role {$role->name} for {$member->username} in {$guild->name}, this role is not public.");
                             $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
                                 'title' => ':x: Remove Role',
                                 'description' => "The role you specified does not exist or is not public.",
@@ -191,6 +218,7 @@ class roleclaim{
                         }
                     }else{
                         //Role name was not found
+                        $this->logger->warn("REMOVE ROLE: Skipped adding role {$msgarg} for {$member->username} in {$guild->name}, this role cannot be found.");
                         $embed = $this->discord->factory(\Discord\Parts\Embed\Embed::class, [
                             'title' => ':x: Remove Role',
                             'description' => "The role you specified does not exist or is not public.",

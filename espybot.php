@@ -7,6 +7,7 @@ $f3 = Base::instance();
 use Discord\Discord;
 use Discord\WebSockets\Event;
 use Discord\WebSockets\WebSocket;
+use Discord\WebSockets\Intents;
 use Logger\Botlog;
 
 //Allow up to 1GB memory usage
@@ -39,6 +40,7 @@ $logger = new Botlog();
 $discord = new Discord([
     'token' => $f3->get('token'), 
     'loadAllMembers' => true,
+    'intents' => Intents::getDefaultIntents() | Intents::GUILD_MEMBERS,
 ]);
 
 //Load the library files
@@ -108,7 +110,7 @@ $discord->on('error', function ($e) use ($logger) {
 //On a message, do all of the following
 $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, $discord, $plugins, $f3, $commands, $plugin_cmds){
     //If we sent the message, just ignore it
-    if($msgData->author->id != $discord->id) {
+    if($msgData->user_id != $discord->id) {
         //Check for command, so we don't do all of this expensive shit for a random message
         if ($command = containsTrigger($msgData->content, $commands)) {
             $channelData = $msgData->channel;
@@ -119,24 +121,28 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
             //Store message object
             $msgobject = $msgData;
 
-            //If PM, set channel name to username sending message
-            if($channelData->is_private == true)
-                $channelData->setAttribute("name", $msgData->author->username);
+            //If PM, set private flag
+            if(!$msgData->channel->guild_id){
+                $is_private = true;
+            }else{
+                $is_private = false;
+            }
 
             //Create the data array for the plugins to use
             $msgData = array(
                 "isBotOwner" => false,
-                "user" => $msgData->author,
+                "user" => $msgData->usera,
                 "message" => array(
                     "timestamp" => $msgData->timestamp->setTimezone('America/New_York')->toDateTimeString(),
-                    "id" => $msgData->author->id,
+                    "id" => $msgData->user_id,
                     "message" => $msgData->content,
                     "channelID" => $msgData->channel_id,
-                    "from" => $msgData->author->username,
-                    "fromID" => $msgData->author->id,
-                    "fromDiscriminator" => $msgData->author->discriminator,
-                    "fromAvatar" => $msgData->author->avatar,
-                    "attachments" => $msgData->attachments
+                    "from" => $msgData->user->username,
+                    "fromID" => $msgData->user_id,
+                    "fromDiscriminator" => $msgData->user->discriminator,
+                    "fromAvatar" => $msgData->user->avatar,
+                    "attachments" => $msgData->attachments,
+                    "isPrivate" => $is_private
                 ),
                 "channel" => $channelData,
                 "guild" => $channelData->is_private ? array("name" => "PM") : array("id" => $channelData->guild_id, "name" => $channelData->guild->name),
@@ -165,9 +171,12 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
             //dump($msgData->channel);
             $channelData = $msgData->channel;
 
-            //If PM, set channel name to username sending message
-            if($channelData->is_private == true)
-                $channelData->setAttribute("name", $msgData->author->username);
+            //If PM, set private flag
+            if(!$msgData->channel->guild_id){
+                $is_private = true;
+            }else{
+                $is_private = false;
+            }
 
             //Create the data array for the plugins to use
             $msgData = array(
@@ -175,14 +184,15 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
                 "user" => $msgData,
                 "message" => array(
                     "timestamp" => $msgData->timestamp->setTimezone('America/New_York')->toDateTimeString(),
-                    "id" => $msgData->author->id,
+                    "id" => $msgData->user_id,
                     "message" => $msgData->content,
                     "channelID" => $msgData->channel_id,
-                    "from" => $msgData->author->username,
-                    "fromID" => $msgData->author->id,
-                    "fromDiscriminator" => $msgData->author->discriminator,
-                    "fromAvatar" => $msgData->author->avatar,
-                    "attachments" => $msgData->attachments
+                    "from" => $msgData->user->username,
+                    "fromID" => $msgData->user_id,
+                    "fromDiscriminator" => $msgData->user->discriminator,
+                    "fromAvatar" => $msgData->user->avatar,
+                    "attachments" => $msgData->attachments,
+                    "isPrivate" => $is_private
                 ),
                 "channel" => $channelData,
                 "guild" => $channelData->is_private ? array("name" => "PM") : array("id" => $channelData->guild_id, "name" => $channelData->guild->name),
