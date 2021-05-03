@@ -131,7 +131,7 @@ $discord->on(Event::MESSAGE_CREATE, function ($msgData, $botData) use ($logger, 
             //Create the data array for the plugins to use
             $msgData = array(
                 "isBotOwner" => false,
-                "user" => $msgData->usera,
+                "user" => $msgData->user,
                 "message" => array(
                     "timestamp" => $msgData->timestamp->setTimezone('America/New_York')->toDateTimeString(),
                     "id" => $msgData->user_id,
