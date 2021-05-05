@@ -6,6 +6,20 @@ if($f3->get('update_invites')){
     });
 }
 
+if($f3->get('plugins.roleclaim')){
+    $discord->on(\Discord\WebSockets\Event::MESSAGE_REACTION_ADD, function ($userData) use ($logger, $discord, $plugins) {
+        call_event('MESSAGE_REACTION_ADD',$userData);;
+    });
+    
+    $discord->on(\Discord\WebSockets\Event::MESSAGE_REACTION_REMOVE, function ($userData) use ($logger, $discord, $plugins) {
+        call_event('MESSAGE_REACTION_REMOVE',$userData);
+    });
+    
+    $discord->on(\Discord\WebSockets\Event::MESSAGE_REACTION_REMOVE_ALL, function ($userData) use ($logger, $discord, $plugins) {
+        call_event('MESSAGE_REACTION_REMOVE_ALL',$userData);
+    });
+}
+
 //Set event callbacks
 $discord->on(\Discord\WebSockets\Event::GUILD_BAN_ADD, function ($userData) use ($logger, $discord, $plugins) {
     call_event('GUILD_BAN_ADD',$userData);
