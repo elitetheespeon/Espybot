@@ -40,7 +40,7 @@ $logger = new Botlog();
 $discord = new Discord([
     'token' => $f3->get('token'), 
     'loadAllMembers' => true,
-    'intents' => Intents::getDefaultIntents() | Intents::GUILD_MEMBERS,
+    'intents' => Intents::getDefaultIntents() | Intents::GUILD_MEMBERS | Intents::GUILD_MESSAGE_REACTIONS,
 ]);
 
 //Load the library files

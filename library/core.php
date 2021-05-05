@@ -429,6 +429,30 @@ function call_event($type,$data){
             }
             break;
 
+        //Called when a reaction is added
+        case 'MESSAGE_REACTION_ADD':
+            //Send to role claim plugin
+            $roleclaim = new roleclaim;
+            $roleclaim->reaction_add($data);
+            break;
+            
+        //Called when a reaction is removed
+        case 'MESSAGE_REACTION_REMOVE':
+            //Send to role claim plugin
+            $roleclaim = new roleclaim;
+            $roleclaim->reaction_remove($data);
+            break;
+            
+        //Called when all reactions are removed
+        case 'MESSAGE_REACTION_REMOVE_ALL':
+            //dump($data->user_id);
+            //dump($data->message_id);
+            //dump($data->channel_id);
+            //dump($data->guild_id);
+            //dump($data->emoji->id);
+            //dump($data->emoji->name);
+            break;
+
         //Called when a message is changed
         case 'MESSAGE_UPDATE':
             //We currently do not use this event and it fires on embed messages
